@@ -75,7 +75,8 @@ def room(request,pk) :
     # getRoom = Room.objects.get(pk=pk)
     getRoom = Room.objects.filter(id=pk).first()
     roomMessages = getRoom.message_set.all().order_by("-created")
-    context = {'rooms' : getRoom , 'roomMessages' : roomMessages }
+    participants = getRoom.participants.all()
+    context = {'rooms' : getRoom , 'roomMessages' : roomMessages, 'participants' : participants }
     
     if request.method == "POST":
         message = Message.objects.create(
@@ -83,10 +84,11 @@ def room(request,pk) :
             room = getRoom,
             body = request.POST.get("body")
         )
+        getRoom.participants.add(request.user)
         return redirect('base:room', pk=getRoom.id)
     
     
-    return render(request, "base/room.html", context)
+    return render(request, "base/room.html", context )
 
 
 @login_required(login_url='base:login')
@@ -127,3 +129,14 @@ def deleteRoom(request,pk) :
         room.delete()
         return redirect('base:home')
     return render(request,"base/delete.html",{'obj':room})
+    
+@login_required(login_url='base:login')
+def deleteMessage(request,pk) :
+    message = Message.objects.get(pk=pk)
+    roomID = message.room.id
+    
+    
+    if request.method == 'POST':
+        message.delete()
+        return redirect('base:room', pk=roomID)
+    return render(request,"base/delete.html",{'obj':message})
