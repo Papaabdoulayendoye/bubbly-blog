@@ -15,7 +15,11 @@
 
         <div>
             <div>
-                <a href="{% url 'base:delete-room' rooms.id  %}">Delete</a>
+                
+                {% if request.user == rooms.host %}
+                    <a href="{% url 'base:delete-room' rooms.id  %}">Delete</a>
+                {% endif %}
+                    
                 <h1>{{ rooms.name }}</h1>
                 <p>{{ rooms.description }}</p>
             </div>
@@ -38,7 +42,7 @@
                     </div>
             
                 {% endfor %}
-            </div>
+        </div>
     
     
             {% if request.user.is_authenticated %}

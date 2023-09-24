@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from .models import Room, Topic, Message
 from .forms import RoomForm
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.db.models import Q
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
@@ -68,7 +68,13 @@ def home(request) :
         Q(description__icontains=q))
     topics = Topic.objects.all()
     room_count = rooms.count()
-    context = {'rooms': rooms, 'topics': topics, 'room_count': room_count  }
+    roomMessages = Message.objects.filter(Q(room__topic__name__icontains=q))
+    
+    context = {'rooms': rooms,
+            'topics': topics, 
+            'room_count': room_count,
+            'roomMessages' : roomMessages}
+    
     return render(request, "base/home.html",context) 
 
 def room(request,pk) :
@@ -129,7 +135,9 @@ def deleteRoom(request,pk) :
         room.delete()
         return redirect('base:home')
     return render(request,"base/delete.html",{'obj':room})
-    
+
+
+
 @login_required(login_url='base:login')
 def deleteMessage(request,pk) :
     message = Message.objects.get(pk=pk)
@@ -138,5 +146,6 @@ def deleteMessage(request,pk) :
     
     if request.method == 'POST':
         message.delete()
-        return redirect('base:room', pk=roomID)
+        return redirect('base:home')
+        # return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
     return render(request,"base/delete.html",{'obj':message})
