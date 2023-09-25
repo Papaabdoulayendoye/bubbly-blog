@@ -77,6 +77,16 @@ def home(request) :
     
     return render(request, "base/home.html",context) 
 
+# @login_required
+def userProfile(request,pk):
+    user = User.objects.get(pk=pk)
+    rooms = user.room_set.all()
+    roomMessages = user.message_set.all()
+    topics = Topic.objects.all()
+    context = {'user' : user, 'roomMessages' : roomMessages ,'rooms' : rooms, 'topics' : topics }
+    return render(request,"base/profile.html",context)
+
+
 def room(request,pk) :
     # getRoom = Room.objects.get(pk=pk)
     getRoom = Room.objects.filter(id=pk).first()

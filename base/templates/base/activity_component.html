@@ -2,7 +2,7 @@
 <hr>
 {% for message in roomMessages %}
     <div>
-        <small>@{{message.user}} {{message.created | timesince}} ago</small>
+        <small><a href="{% url 'base:user-profile' pk=message.user.id %}">@{{message.user}}</a>{{message.created | timesince}} ago</small>
         <p>{{message}}</p>
         {% if request.user == message.user %}
             <a href="{% url 'base:delete-message' pk=message.id %}">Delete</a>
