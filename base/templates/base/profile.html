@@ -1,4 +1,5 @@
 {% extends 'layout.html' %}
+{% load static %}
 
 
 {% block style %}
@@ -17,6 +18,7 @@
         </div>
         <div>
             {% include 'base/feed_component.html' %}
+            <img src="{% static 'images/Gojo3.png' %}" alt="Gojo Profile"  width="384px" height="424px">
         </div>
         <div>
             {% include 'base/activity_component.html' %}
